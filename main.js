@@ -1,11 +1,87 @@
+var TILESZ = 20
 
-// GameBoard code below
+
+
+
+// return a random int
+function randomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
+}
 
 function distance(a, b) {
     var dx = a.x - b.x;
     var dy = a.y - b.y;
     return Math.sqrt(dx * dx + dy * dy);
 }
+
+// GameBoard code below
+
+function GamePanel(ctx, game, width, height, random) {
+    this.ctx = ctx;
+    this.game = game;
+    console.log(this.game);
+    Entity.call(this);
+    this.width = width;
+    this.height = height;
+    this.grid = createGrid(random, this.width, this.height);
+    console.log(ctx);
+    this.ctx.width = this.width * TILESZ;
+    this.ctx.height = this.height * TILESZ;
+
+    console.log(this.ctx);
+}
+
+GamePanel.prototype.draw = function (ctx) {
+    for (var i = 0; i < this.height; i++) {
+        for (var j = 0; j < this.width; j++) {
+            ctx.strokeStyle = "green";
+            ctx.strokeRect(j * TILESZ, i * TILESZ, TILESZ, TILESZ);
+            if (this.grid[i][j] === 1) {
+                ctx.fillStyle = "black";
+                ctx.fillRect(j * TILESZ, i * TILESZ, TILESZ, TILESZ);
+            } else {
+                ctx.fillStyle = "white";
+                ctx.fillRect(j * TILESZ, i * TILESZ, TILESZ, TILESZ);
+            }
+        }   
+    }
+}
+
+GamePanel.prototype.drawGrid = function (ctx) {
+    // vertical lines
+    for (var i = 0; i < this.height; i++) {
+        ctx.strokeStyle = "red";
+        ctx.strokeRect(j * TILESZ, 0, TILESZ, TILESZ);
+    }
+    // horiz lines
+    for (var j = 0; j < this.width; j++) {
+
+    }
+}
+
+GamePanel.prototype.update = function () {
+
+}
+
+// random param is a boolean flag to determine if we want a random array or not.
+function createGrid(random, width, height) {
+    var grid = [];
+    for (var i = 0; i < width; i++) {
+        var row = [];
+        for (var j = 0; j < height; j++) {
+            if (random) {
+                row[j] = randomInt(0, 2);
+            } else {
+                row[j] = 0;
+            }
+        }
+        grid[i] = row;
+    }
+    return grid;
+}
+
 
 function Circle(game) {
     this.player = 1;
@@ -22,41 +98,6 @@ function Circle(game) {
         this.velocity.x *= ratio;
         this.velocity.y *= ratio;
     }
-};
-
-Circle.prototype = new Entity();
-Circle.prototype.constructor = Circle;
-
-Circle.prototype.setIt = function () {
-    this.it = true;
-    this.color = 0;
-    this.visualRadius = 500;
-};
-
-Circle.prototype.setNotIt = function () {
-    this.it = false;
-    this.color = 3;
-    this.visualRadius = 200;
-};
-
-Circle.prototype.collide = function (other) {
-    return distance(this, other) < this.radius + other.radius;
-};
-
-Circle.prototype.collideLeft = function () {
-    return (this.x - this.radius) < 0;
-};
-
-Circle.prototype.collideRight = function () {
-    return (this.x + this.radius) > 800;
-};
-
-Circle.prototype.collideTop = function () {
-    return (this.y - this.radius) < 0;
-};
-
-Circle.prototype.collideBottom = function () {
-    return (this.y + this.radius) > 800;
 };
 
 Circle.prototype.update = function () {
@@ -159,12 +200,6 @@ Circle.prototype.draw = function (ctx) {
 };
 
 
-
-// the "main" code begins here
-var friction = 1;
-var acceleration = 1000000;
-var maxSpeed = 200;
-
 var ASSET_MANAGER = new AssetManager();
 
 ASSET_MANAGER.queueDownload("./img/960px-Blank_Go_board.png");
@@ -172,19 +207,12 @@ ASSET_MANAGER.queueDownload("./img/black.png");
 ASSET_MANAGER.queueDownload("./img/white.png");
 
 ASSET_MANAGER.downloadAll(function () {
-    console.log("starting up da sheild");
+    console.log("hello there");
     var canvas = document.getElementById('gameWorld');
     var ctx = canvas.getContext('2d');
-
-
     var gameEngine = new GameEngine();
-    var circle = new Circle(gameEngine);
-    circle.setIt();
-    gameEngine.addEntity(circle);
-    for (var i = 0; i < 12; i++) {
-        circle = new Circle(gameEngine);
-        gameEngine.addEntity(circle);
-    }
     gameEngine.init(ctx);
     gameEngine.start();
+    var gp = new GamePanel(ctx, gameEngine, 40, 40, true);
+    gameEngine.addEntity(gp);
 });
