@@ -1,4 +1,4 @@
-var TILESZ = 20
+var tilesz = 20;
 
 
 
@@ -19,41 +19,39 @@ function distance(a, b) {
 // GameBoard code below
 
 function GamePanel(ctx, game, width, height, random) {
+    this.random = random;
+    this.tilesz = 800 / width;
     this.ctx = ctx;
     this.game = game;
     console.log(this.game);
     Entity.call(this);
     this.width = width;
-    this.height = height;
+    this.height = width;
     this.grid = createGrid(random, this.width, this.height);
-    console.log(ctx);
-    this.ctx.width = this.width * TILESZ;
-    this.ctx.height = this.height * TILESZ;
-
-    console.log(this.ctx);
 }
 
 GamePanel.prototype.draw = function (ctx) {
     for (var i = 0; i < this.height; i++) {
         for (var j = 0; j < this.width; j++) {
             ctx.strokeStyle = "green";
-            ctx.strokeRect(j * TILESZ, i * TILESZ, TILESZ, TILESZ);
+            ctx.strokeRect(j * this.tilesz, i * this.tilesz, this.tilesz, this.tilesz);
             if (this.grid[i][j] === 1) {
                 ctx.fillStyle = "black";
-                ctx.fillRect(j * TILESZ, i * TILESZ, TILESZ, TILESZ);
+                ctx.fillRect(j * this.tilesz, i * this.tilesz, this.tilesz, this.tilesz);
             } else {
                 ctx.fillStyle = "white";
-                ctx.fillRect(j * TILESZ, i * TILESZ, TILESZ, TILESZ);
+                ctx.fillRect(j * this.tilesz, i * this.tilesz, this.tilesz, this.tilesz);
             }
         }   
     }
+    console.log(this.tilesz);
 }
 
 GamePanel.prototype.drawGrid = function (ctx) {
     // vertical lines
     for (var i = 0; i < this.height; i++) {
         ctx.strokeStyle = "red";
-        ctx.strokeRect(j * TILESZ, 0, TILESZ, TILESZ);
+        ctx.strokeRect(j * tilesz, 0, tilesz, tilesz);
     }
     // horiz lines
     for (var j = 0; j < this.width; j++) {
@@ -62,7 +60,17 @@ GamePanel.prototype.drawGrid = function (ctx) {
 }
 
 GamePanel.prototype.update = function () {
+}
 
+function setBoardSizeListener(gamepanel) {
+    document.getElementById("sizeOfBoardButton").addEventListener("click", function () {
+        var sizeOfBoard = document.getElementById("sizeOfBoard");
+        gamepanel.width = parseInt(sizeOfBoard.value, 10);
+        gamepanel.height = parseInt(sizeOfBoard.value, 10);
+        gamepanel.tilesz = 800 / gamepanel.width;
+        gamepanel.grid = createGrid(gamepanel.random, gamepanel.width, gamepanel.width);
+        sizeOfBoard.value = "";
+    });
 }
 
 // random param is a boolean flag to determine if we want a random array or not.
@@ -213,6 +221,7 @@ ASSET_MANAGER.downloadAll(function () {
     var gameEngine = new GameEngine();
     gameEngine.init(ctx);
     gameEngine.start();
-    var gp = new GamePanel(ctx, gameEngine, 40, 40, true);
+    var gp = new GamePanel(ctx, gameEngine, 90, 90, true);
     gameEngine.addEntity(gp);
+    setBoardSizeListener(gp);
 });
