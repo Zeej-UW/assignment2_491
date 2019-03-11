@@ -11,8 +11,30 @@
 <body>
     <div></div>
     <canvas id="gameWorld" width="800" height="800" style="border: 1px solid white; background: white"></canvas>
+    <p>Number of tiles for the Game Board (Note: gets real laggy beyond 150)</p>
     <input class="textField" id="sizeOfBoard" type="number"
-           placeholder="Number of Tiles" />
+           placeholder="Enter a val > 0)" />
     <button class="button" id="sizeOfBoardButton" type="button">Submit</button>
+    <br />
+    <br />
+
+    Delicious music to help realize the inevitability of death:
+    <br />
+    <audio controls autoplay id="music">
+        <source src="./sound/gp.mp3" type="audio/mp3" />
+    </audio>
+
+    
+    <p>
+        Toggle random board generation:
+        <input type="checkbox" id="randomToggle" name="Random Toggle"
+               checked>
+        <br />
+        Toggle Grid:
+        <input type="checkbox" id="gridToggle" name="Random Toggle"
+               checked>
+
+    </p>
+
 </body>
 </html>

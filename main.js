@@ -1,4 +1,5 @@
-var tilesz = 20;
+let tilesz = 20;
+let GP;
 
 
 
@@ -19,22 +20,33 @@ function distance(a, b) {
 // GameBoard code below
 
 function GamePanel(ctx, game, width, height, random) {
+    this.GE = game;
     this.random = random;
     this.tilesz = 800 / width;
     this.ctx = ctx;
-    this.game = game;
-    console.log(this.game);
     Entity.call(this);
+
+    this.gridFlag = true;
     this.width = width;
     this.height = width;
     this.grid = createGrid(random, this.width, this.height);
+
+    // game of life stuff
+    this.counter = 0;
+    this.maxCounter = 0.2;
+    this.speed = 5;
+    this.underPop = 2;
+    this.overPop = 3;
+    this.reproduction = 3;
 }
 
 GamePanel.prototype.draw = function (ctx) {
     for (var i = 0; i < this.height; i++) {
         for (var j = 0; j < this.width; j++) {
-            ctx.strokeStyle = "green";
-            ctx.strokeRect(j * this.tilesz, i * this.tilesz, this.tilesz, this.tilesz);
+            if (this.gridFlag) {
+                ctx.strokeStyle = "green";
+                ctx.strokeRect(j * this.tilesz, i * this.tilesz, this.tilesz, this.tilesz);
+            }
             if (this.grid[i][j] === 1) {
                 ctx.fillStyle = "black";
                 ctx.fillRect(j * this.tilesz, i * this.tilesz, this.tilesz, this.tilesz);
@@ -44,33 +56,101 @@ GamePanel.prototype.draw = function (ctx) {
             }
         }   
     }
-    console.log(this.tilesz);
 }
 
-GamePanel.prototype.drawGrid = function (ctx) {
-    // vertical lines
-    for (var i = 0; i < this.height; i++) {
-        ctx.strokeStyle = "red";
-        ctx.strokeRect(j * tilesz, 0, tilesz, tilesz);
-    }
-    // horiz lines
-    for (var j = 0; j < this.width; j++) {
 
-    }
-}
 
 GamePanel.prototype.update = function () {
+    if (this.counter > this.maxCounter && !this.GE.pause) {
+        this.updateState();
+        this.counter = 0;
+    } else {
+        this.counter += this.GE.clockTick;
+    }
+}
+
+GamePanel.prototype.updateState = function () {
+    let  newGrid = [];
+    for (let del = 0; del < this.width; del++) {
+        newGrid[del] = this.grid[del].slice();
+    }
+    for (let i = 0; i < this.width; i++) {
+        for (let j = 0; j < this.height; j++) {
+            let neighbors = 0;
+            for (let x = -1; x <= 1; x++) {
+                for (let y = -1; y <= 1; y++) {
+                    if (x + i >= 0 && x + i < this.width && y + j >= 0 && y + j < this.height) {
+                        let num = this.grid[parseInt(x + i)][parseInt(y + j)];
+                        neighbors += num;
+                    }
+                }
+            }
+            neighbors -= this.grid[i][j];
+            if (this.grid[i][j] === 1 && neighbors < this.underPop) {
+                newGrid[i][j] = 0;
+            } else if (this.grid[i][j] === 1 && neighbors > this.overPop) {
+                newGrid[i][j] = 0;
+            } else if ((this.grid[i][j] === 0 && neighbors === this.reproduction)) {
+                newGrid[i][j] = 1;
+            } else {
+                newGrid[i][j] = this.grid[i][j];
+            }
+        }
+    }
+    this.grid = newGrid;
+}
+
+function setKeyListeners(gamepanel) {
+    gamepanel.GE.ctx.canvas.addEventListener("keydown", function (e) {
+        e.preventDefault();
+        alert("test");
+        if (e.code === "KeyP") {
+            gamepanel.GE.pause = !gamepanel.GE.pause;
+        }
+    }, false);
+}
+
+function setDrawingListeners(gamepanel) {
+
 }
 
 function setBoardSizeListener(gamepanel) {
     document.getElementById("sizeOfBoardButton").addEventListener("click", function () {
-        var sizeOfBoard = document.getElementById("sizeOfBoard");
-        gamepanel.width = parseInt(sizeOfBoard.value, 10);
-        gamepanel.height = parseInt(sizeOfBoard.value, 10);
-        gamepanel.tilesz = 800 / gamepanel.width;
-        gamepanel.grid = createGrid(gamepanel.random, gamepanel.width, gamepanel.width);
+        var sizeOfBoard = parseInt(document.getElementById("sizeOfBoard").value, 10);
+        if (sizeOfBoard > 0) {
+            gamepanel.width = sizeOfBoard;
+            gamepanel.height = sizeOfBoard;
+            gamepanel.tilesz = 800 / gamepanel.width;
+            gamepanel.grid = createGrid(gamepanel.random, gamepanel.width, gamepanel.width);
+        }
+        else {
+            alert("invalid value!")
+        }
         sizeOfBoard.value = "";
     });
+}
+
+function setGridToggle(gamepanel) {
+    document.getElementById("gridToggle").addEventListener("click", function () {
+        var gridToggle = document.getElementById("gridToggle");
+        gamepanel.gridFlag = gridToggle.checked;
+    });
+}
+
+function setRandomBoardListener(gamepanel) {
+    document.getElementById("randomToggle").addEventListener("click", function () {
+        var randomToggle = document.getElementById("randomToggle");
+        if (randomToggle.checked == true) {
+            gamepanel.random = true;
+            console.log("hi");
+            gamepanel.grid = createGrid(gamepanel.random, gamepanel.width, gamepanel.width);
+        } else {
+            console.log("bye");
+            gamepanel.random = false;
+            gamepanel.grid = createGrid(gamepanel.random, gamepanel.width, gamepanel.width);
+        }
+
+    })
 }
 
 // random param is a boolean flag to determine if we want a random array or not.
@@ -110,7 +190,6 @@ function Circle(game) {
 
 Circle.prototype.update = function () {
     Entity.prototype.update.call(this);
- //  console.log(this.velocity);
 
     this.x += this.velocity.x * this.game.clockTick;
     this.y += this.velocity.y * this.game.clockTick;
@@ -208,7 +287,7 @@ Circle.prototype.draw = function (ctx) {
 };
 
 
-var ASSET_MANAGER = new AssetManager();
+let ASSET_MANAGER = new AssetManager();
 
 ASSET_MANAGER.queueDownload("./img/960px-Blank_Go_board.png");
 ASSET_MANAGER.queueDownload("./img/black.png");
@@ -216,12 +295,18 @@ ASSET_MANAGER.queueDownload("./img/white.png");
 
 ASSET_MANAGER.downloadAll(function () {
     console.log("hello there");
-    var canvas = document.getElementById('gameWorld');
-    var ctx = canvas.getContext('2d');
-    var gameEngine = new GameEngine();
+    let canvas = document.getElementById('gameWorld');
+    let ctx = canvas.getContext('2d');
+    let gameEngine = new GameEngine();
     gameEngine.init(ctx);
     gameEngine.start();
-    var gp = new GamePanel(ctx, gameEngine, 90, 90, true);
-    gameEngine.addEntity(gp);
-    setBoardSizeListener(gp);
+    GP = new GamePanel(ctx, gameEngine, 90, 90, true);
+    var sound = document.getElementById('music');
+    sound.autoplay = true;
+    sound.loop = true;
+    sound.volume = 0.2;
+    gameEngine.addEntity(GP);
+    setBoardSizeListener(GP);
+    setRandomBoardListener(GP);
+    setGridToggle(GP);
 });

@@ -32,11 +32,13 @@ function GameEngine() {
     this.entities = [];
     this.showOutlines = false;
     this.ctx = null;
+    this.mouseDown = false;
     this.click = null;
     this.mouse = null;
     this.wheel = null;
     this.surfaceWidth = null;
     this.surfaceHeight = null;
+    this.pause = false;
 }
 
 GameEngine.prototype.init = function (ctx) {
@@ -67,12 +69,41 @@ GameEngine.prototype.startInput = function () {
 
     this.ctx.canvas.addEventListener("mousemove", function (e) {
         //console.log(getXandY(e));
-        that.mouse = getXandY(e);
+
+
+    }, false);
+
+    this.ctx.canvas.addEventListener("keydown", function (e) {
+        e.preventDefault();
+        if (e.code == 80) {
+            that.pause = !that.pause;
+        }
+
     }, false);
 
     this.ctx.canvas.addEventListener("click", function (e) {
-        //console.log(getXandY(e));
-        that.click = getXandY(e);
+        that.pause = true;
+        this.mouseDown = true;
+        let mouseXY = getXandY(e);
+        let x = mouseXY.x;
+        let y = mouseXY.y;
+        let xGrid = (x - (x % GP.tilesz)) / GP.tilesz;
+        let yGrid = (y - (y % GP.tilesz)) / GP.tilesz;
+        if (GP.grid[yGrid][xGrid] == 1) {
+            GP.grid[yGrid][xGrid] = 0;
+        } else {
+            GP.grid[yGrid][xGrid] = 1;
+        }
+        console.log("x grid: " + xGrid);
+        console.log("y grid: " + yGrid);
+    }, false);
+
+    this.ctx.canvas.addEventListener("mousedown", function (e) {
+
+    }, false);
+
+    this.ctx.canvas.addEventListener("mouseup", function (e) {
+        that.mouseDown = false;
     }, false);
 
     this.ctx.canvas.addEventListener("wheel", function (e) {
