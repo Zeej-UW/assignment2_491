@@ -21,6 +21,7 @@ function distance(a, b) {
 
 function GamePanel(ctx, game, width, height, random) {
     this.GE = game;
+    this.GE.pause = true;
     this.random = random;
     this.tilesz = 800 / width;
     this.ctx = ctx;
@@ -44,7 +45,7 @@ GamePanel.prototype.draw = function (ctx) {
     for (var i = 0; i < this.height; i++) {
         for (var j = 0; j < this.width; j++) {
             if (this.gridFlag) {
-                ctx.strokeStyle = "green";
+                ctx.strokeStyle = "gray";
                 ctx.strokeRect(j * this.tilesz, i * this.tilesz, this.tilesz, this.tilesz);
             }
             if (this.grid[i][j] === 1) {
@@ -300,7 +301,7 @@ ASSET_MANAGER.downloadAll(function () {
     let gameEngine = new GameEngine();
     gameEngine.init(ctx);
     gameEngine.start();
-    GP = new GamePanel(ctx, gameEngine, 90, 90, true);
+    GP = new GamePanel(ctx, gameEngine, 50, 50, true);
     var sound = document.getElementById('music');
     sound.autoplay = true;
     sound.loop = true;

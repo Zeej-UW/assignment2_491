@@ -74,9 +74,23 @@ GameEngine.prototype.startInput = function () {
     }, false);
 
     this.ctx.canvas.addEventListener("keydown", function (e) {
-        e.preventDefault();
-        if (e.code == 80) {
+        console.log(e.code);
+        if (e.code == "KeyP") {
             that.pause = !that.pause;
+        }
+
+        // clear the grid
+        if (e.code == "KeyC") {
+            GP.grid = createGrid(false, GP.width, GP.height);
+        }
+
+        if (e.code == "KeyM") {
+            var mu = document.getElementById("music");
+            mu.muted = !mu.muted;
+        }
+
+        if (e.code == "ArrowRight") {
+            GP.updateState();
         }
 
     }, false);
@@ -87,8 +101,8 @@ GameEngine.prototype.startInput = function () {
         let mouseXY = getXandY(e);
         let x = mouseXY.x;
         let y = mouseXY.y;
-        let xGrid = (x - (x % GP.tilesz)) / GP.tilesz;
-        let yGrid = (y - (y % GP.tilesz)) / GP.tilesz;
+        let xGrid = Math.ceil((x - (x % GP.tilesz)) / GP.tilesz);
+        let yGrid = Math.ceil((y - (y % GP.tilesz)) / GP.tilesz);
         if (GP.grid[yGrid][xGrid] == 1) {
             GP.grid[yGrid][xGrid] = 0;
         } else {
