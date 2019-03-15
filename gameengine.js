@@ -1,4 +1,7 @@
 // This game shell was happily copied from Googler Seth Ladd's "Bad Aliens" game and his Google IO talk in 2011
+let name = "Charles Jackson"
+let stateid = "data1";
+let socket = io.connect("http://24.16.255.56:8888");
 
 window.requestAnimFrame = (function () {
     return window.requestAnimationFrame ||
@@ -92,6 +95,40 @@ GameEngine.prototype.startInput = function () {
         if (e.code == "ArrowRight") {
             GP.updateState();
         }
+
+        let d = new Date();
+
+        // save
+        if (e.code == "KeyS") {
+            socket.emit('save', {
+                studentname: name,
+                statename: stateid,
+                pause: GP.GE.pause,
+                random: GP.random,
+                tilesz: GP.tilesz,
+                width: GP.width,
+                height: GP.height,
+                grid: GP.grid
+            });
+        }
+        // load
+        if (e.code == "KeyL") {
+
+            socket.emit('load', {
+                studentname: name,
+                statename: stateid
+            });
+
+            socket.on("load", function (data) {
+                
+                GP.GE.pause = data.pause;
+                GP.random = data.random;
+                GP.tilesz = data.tilesz;
+                GP.width = data.width;
+                GP.height = data.height;
+                GP.grid = data.grid;
+            });
+        };
 
     }, false);
 
@@ -212,3 +249,14 @@ Entity.prototype.rotateAndCache = function (image, angle) {
     //offscreenCtx.strokeRect(0,0,size,size);
     return offscreenCanvas;
 }
+
+
+socket.on("connect", function () {
+    console.log("Socket connected.")
+});
+socket.on("disconnect", function () {
+    console.log("Socket disconnected.")
+});
+socket.on("reconnect", function () {
+    console.log("Socket reconnected.")
+});

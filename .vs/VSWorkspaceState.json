@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\sound",
+    "\\style"
   ],
-  "SelectedNode": "\\index.html",
+  "SelectedNode": "\\main.js",
   "PreviewInSolutionExplorer": false
 }
