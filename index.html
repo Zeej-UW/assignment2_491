@@ -18,6 +18,11 @@
             <input class="textField" id="sizeOfBoard" type="number"
                    placeholder="Enter a val > 0)" />
             <button class="button" id="sizeOfBoardButton" type="button">Submit</button>
+
+            <p>Enter custom stateID to save or load from (default = data1)</p>
+            <input class="textField" id="stateid"
+                   placeholder="Enter a stateid" />
+            <button class="button" id="stateidBut" type="button">Save</button>
             </p>
             <p>
                 P - (un)Pause Game
@@ -26,10 +31,10 @@
                 <hr />
                 M - (un)Mute Music
                 <hr />
-                L - Load From DB
-                <hr/>
-                S - Save to DB
-                <hr/>
+                L - Load From DB with current stateID val
+                <hr />
+                S - Save to DB with current stateID val
+                <hr />
                 Right Arrow - Step Foward
                 <hr />
                 Click To Fill in Grid

@@ -132,6 +132,19 @@ function setBoardSizeListener(gamepanel) {
     });
 }
 
+function setstateIDListener(gamepanel) {
+    document.getElementById("stateidBut").addEventListener("click", function () {
+        var stateid_temp = document.getElementById("stateid").value
+        if (stateid_temp === "") {
+            return;
+        }
+        else {
+            stateid = stateid_temp;
+            console.log(stateid);
+        }
+    });
+}
+
 function setGridToggle(gamepanel) {
     document.getElementById("gridToggle").addEventListener("click", function () {
         var gridToggle = document.getElementById("gridToggle");
@@ -311,4 +324,5 @@ ASSET_MANAGER.downloadAll(function () {
     setBoardSizeListener(GP);
     setRandomBoardListener(GP);
     setGridToggle(GP);
+    setstateIDListener(GP)
 });
